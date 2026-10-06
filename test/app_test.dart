@@ -1,0 +1,184 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sla_tracker/data/app_data.dart';
+import 'package:sla_tracker/main.dart';
+import 'package:sla_tracker/models/task.dart';
+import 'package:sla_tracker/screens/task_details_screen.dart';
+import 'package:sla_tracker/screens/task_form_screen.dart';
+
+void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  // Starts the app the same way main() does.
+  Future<void> startApp(WidgetTester tester) async {
+    bool ok = await AppData.load();
+    // Remove any app from an earlier start, like closing it.
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(MyApp(loadedOk: ok));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('sign in opens the dashboard', (tester) async {
+    await startApp(tester);
+    expect(find.text('Who is working today?'), findsOneWidget);
+
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hello, Pacifique'), findsOneWidget);
+  });
+
+  testWidgets('empty task form shows error messages', (tester) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('saveTaskButton')));
+    await tester.tap(find.byKey(const Key('saveTaskButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please enter a title'), findsOneWidget);
+    expect(find.text('Please choose a team member'), findsOneWidget);
+    expect(find.text('Please pick a due date'), findsOneWidget);
+  });
+
+  testWidgets('create a task, and it is still there after a restart', (
+    tester,
+  ) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    // Open the Tasks tab and the new task form.
+    await tester.tap(find.text('Tasks'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('addTaskButton')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('titleField')),
+      'Record the demo',
+    );
+
+    await tester.tap(find.byKey(const Key('assigneeField')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Abigail Salem Tendo').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('dateField')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const Key('saveTaskButton')));
+    await tester.tap(find.byKey(const Key('saveTaskButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Record the demo'), findsOneWidget);
+
+    // Restart: still signed in, and the task is still saved.
+    AppData.tasks = [];
+    await startApp(tester);
+    expect(find.text('Hello, Pacifique'), findsOneWidget);
+    await tester.tap(find.text('Tasks'));
+    await tester.pumpAndSettle();
+    expect(find.text('Record the demo'), findsOneWidget);
+  });
+
+  testWidgets('marking an overdue task Done makes it Completed', (
+    tester,
+  ) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Fix login screen layout'));
+    await tester.pumpAndSettle();
+    expect(find.text('Overdue'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('statusDropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Done').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Completed'), findsOneWidget);
+    expect(find.text('Overdue'), findsNothing);
+  });
+
+  testWidgets('sign out goes back to the sign in screen', (tester) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    // The list only builds what is on screen, so scroll down to the button.
+    await tester.scrollUntilVisible(find.text('Sign out'), 100);
+    await tester.tap(find.text('Sign out'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Who is working today?'), findsOneWidget);
+  });
+
+  testWidgets('a long member name does not break the screens', (tester) async {
+    // A small phone, 320 pixels wide.
+    tester.view.physicalSize = const Size(960, 1700);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await AppData.load();
+    // The longest name the member form allows is 30 characters.
+    AppData.members[1].name = 'Pacifique Kamikazi Uwimana Nta';
+    Task task = AppData.tasks[0]; // assigned to that member
+
+    // Task details: the "Assigned to" row.
+    await tester.pumpWidget(MaterialApp(home: TaskDetailsScreen(task: task)));
+    await tester.pumpAndSettle();
+    expect(find.text('Pacifique Kamikazi Uwimana Nta'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    // Task form: the assignee dropdown.
+    await tester.pumpWidget(MaterialApp(home: TaskFormScreen(task: task)));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('an error goes away as soon as the field is fixed', (
+    tester,
+  ) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const Key('saveTaskButton')));
+    await tester.tap(find.byKey(const Key('saveTaskButton')));
+    await tester.pumpAndSettle();
+    expect(find.text('Please enter a title'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('titleField')), 'ab');
+    await tester.pumpAndSettle();
+    expect(find.text('Title must be at least 3 characters'), findsOneWidget);
+  });
+
+  testWidgets('no errors show before the first press on Save', (tester) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('titleField')), 'R');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please choose a team member'), findsNothing);
+    expect(find.text('Please pick a due date'), findsNothing);
+    expect(find.text('Title must be at least 3 characters'), findsNothing);
+  });
+}
