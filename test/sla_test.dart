@@ -52,4 +52,17 @@ void main() {
     );
     expect(getSlaMessage(makeTask(5, 'Low', 'Done'), today), contains('done'));
   });
+
+  test('countSla counts the tasks with one SLA status', () {
+    List<Task> tasks = [
+      makeTask(-1, 'High', 'To Do'), // Overdue
+      makeTask(-3, 'Low', 'In Progress'), // Overdue
+      makeTask(10, 'Low', 'To Do'), // On Track
+      makeTask(-5, 'High', 'Done'), // Completed
+    ];
+    expect(countSla(tasks, 'Overdue', today), 2);
+    expect(countSla(tasks, 'On Track', today), 1);
+    expect(countSla(tasks, 'Completed', today), 1);
+    expect(countSla(tasks, 'At Risk', today), 0);
+  });
 }
