@@ -5,6 +5,7 @@ import '../data/app_data.dart';
 import '../logic/sla.dart';
 import '../models/member.dart';
 import '../models/task.dart';
+import '../widgets/sla_badge.dart';
 import 'member_form_screen.dart';
 import 'sign_in_screen.dart';
 
@@ -101,24 +102,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 16),
 
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'How SLA status works',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8),
-                  Text('Completed: the task status is Done.'),
-                  Text('Overdue: the due date has passed.'),
-                  Text(
-                    'At Risk: the due date is close. High priority = 3 days, '
-                    'Medium = 2 days, Low = 1 day.',
+                  const SizedBox(height: 8),
+                  ruleRow('Completed', 'The task status is Done.'),
+                  ruleRow('Overdue', 'The due date has passed.'),
+                  ruleRow(
+                    'At Risk',
+                    'The due date is close. High priority = 3 days, '
+                        'Medium = 2 days, Low = 1 day.',
                   ),
-                  Text('On Track: everything else.'),
+                  ruleRow('On Track', 'Everything else.'),
                 ],
               ),
             ),
@@ -153,6 +155,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Text(label, style: const TextStyle(fontSize: 12)),
       ],
+    );
+  }
+
+  // One SLA rule with the same icon and colour as the badge.
+  Widget ruleRow(String slaStatus, String rule) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(getSlaIcon(slaStatus), size: 18, color: getSlaColor(slaStatus)),
+          const SizedBox(width: 8),
+          // Expanded lets long rule text wrap instead of overflowing.
+          Expanded(child: Text('$slaStatus: $rule')),
+        ],
+      ),
     );
   }
 }
