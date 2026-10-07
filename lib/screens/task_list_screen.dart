@@ -53,6 +53,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
       }
     }
 
+    // Put the most urgent tasks at the top.
+    shownTasks.sort((a, b) {
+      // Finished tasks go to the bottom of the list.
+      if (a.status == 'Done' && b.status != 'Done') {
+        return 1;
+      }
+      if (b.status == 'Done' && a.status != 'Done') {
+        return -1;
+      }
+      // Otherwise, the soonest due date comes first.
+      return a.dueDate.compareTo(b.dueDate);
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('Tasks')),
       floatingActionButton: FloatingActionButton(
