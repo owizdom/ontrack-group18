@@ -53,6 +53,26 @@ class _TaskListScreenState extends State<TaskListScreen> {
       }
     }
 
+    // Put the most urgent tasks at the top.
+    shownTasks.sort((a, b) {
+      // Finished tasks go to the bottom of the list.
+      if (a.status == 'Done' && b.status != 'Done') {
+        return 1;
+      }
+      if (b.status == 'Done' && a.status != 'Done') {
+        return -1;
+      }
+      // Otherwise, the soonest due date comes first.
+      return a.dueDate.compareTo(b.dueDate);
+    });
+
+    // A different message when there are no tasks at all, and when the
+    // search or filter hides them all.
+    String emptyMessage = 'No tasks match your search or filter.';
+    if (AppData.tasks.isEmpty) {
+      emptyMessage = 'No tasks yet. Tap + to add one.';
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Tasks')),
       floatingActionButton: FloatingActionButton(
@@ -96,9 +116,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
           const SizedBox(height: 12),
 
           if (shownTasks.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('No tasks found.', textAlign: TextAlign.center),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(emptyMessage, textAlign: TextAlign.center),
             ),
           for (Task task in shownTasks)
             TaskCard(task: task, onTap: () => openTask(task)),
