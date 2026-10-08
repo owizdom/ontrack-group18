@@ -119,6 +119,9 @@ void main() {
     await tester.pumpAndSettle();
     // The list only builds what is on screen, so scroll down to the button.
     await tester.scrollUntilVisible(find.text('Sign out'), 100);
+    // Scroll a bit more so the whole button is above the bottom bar.
+    await tester.ensureVisible(find.text('Sign out'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Sign out'));
     await tester.pumpAndSettle();
 
