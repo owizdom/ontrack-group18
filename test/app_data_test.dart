@@ -58,4 +58,15 @@ void main() {
     expect(ok, false);
     expect(AppData.tasks.isEmpty, true);
   });
+
+  test('damaged member data does not crash the app', () async {
+    SharedPreferences.setMockInitialValues({
+      'seeded': true,
+      'tasks': '[]',
+      'members': 'not json',
+    });
+    bool ok = await AppData.load();
+    expect(ok, false);
+    expect(AppData.members.isEmpty, true);
+  });
 }
