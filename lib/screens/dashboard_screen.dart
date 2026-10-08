@@ -40,24 +40,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DateTime today = DateTime.now();
 
     // Count the tasks for each SLA status.
-    int onTrack = 0;
-    int atRisk = 0;
-    int overdue = 0;
-    int completed = 0;
-    List<Task> needsAttention = [];
+    int onTrack = countSla(AppData.tasks, 'On Track', today);
+    int atRisk = countSla(AppData.tasks, 'At Risk', today);
+    int overdue = countSla(AppData.tasks, 'Overdue', today);
+    int completed = countSla(AppData.tasks, 'Completed', today);
 
+    // The tasks that need attention: Overdue or At Risk.
+    List<Task> needsAttention = [];
     for (Task task in AppData.tasks) {
       String sla = getSlaStatus(task, today);
-      if (sla == 'On Track') {
-        onTrack++;
-      } else if (sla == 'At Risk') {
-        atRisk++;
+      if (sla == 'Overdue' || sla == 'At Risk') {
         needsAttention.add(task);
-      } else if (sla == 'Overdue') {
-        overdue++;
-        needsAttention.add(task);
-      } else {
-        completed++;
       }
     }
 

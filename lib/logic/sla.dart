@@ -79,3 +79,15 @@ String getSlaMessage(Task task, DateTime today) {
     return '$left day(s) left. The task is on schedule.';
   }
 }
+
+// Counts how many tasks in the list have the given SLA status.
+// Used by the dashboard so the counting is written only once.
+int countSla(List<Task> tasks, String slaStatus, DateTime today) {
+  int count = 0;
+  for (Task task in tasks) {
+    if (getSlaStatus(task, today) == slaStatus) {
+      count++;
+    }
+  }
+  return count;
+}
