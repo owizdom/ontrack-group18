@@ -69,4 +69,26 @@ void main() {
     expect(ok, false);
     expect(AppData.members.isEmpty, true);
   });
+
+  test('a task is the same after saving and loading', () {
+    Task task = Task(
+      id: 't9',
+      title: 'Write report',
+      description: 'Two pages',
+      assigneeId: 'm3',
+      priority: 'Low',
+      status: 'In Progress',
+      dueDate: DateTime(2026, 10, 20),
+    );
+
+    Task copy = Task.fromMap(task.toMap());
+
+    expect(copy.id, task.id);
+    expect(copy.title, task.title);
+    expect(copy.description, task.description);
+    expect(copy.assigneeId, task.assigneeId);
+    expect(copy.priority, task.priority);
+    expect(copy.status, task.status);
+    expect(copy.dueDate, task.dueDate);
+  });
 }
