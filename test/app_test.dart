@@ -270,4 +270,25 @@ void main() {
     expect(find.text('Member added'), findsOneWidget);
     expect(AppData.members.length, 5);
   });
+
+  testWidgets('removing a member unassigns their tasks', (tester) async {
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Team'));
+    await tester.pumpAndSettle();
+
+    // The fourth member in the list is Nyiramanzi, who has two tasks.
+    await tester.tap(find.byTooltip('Remove member').at(3));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove Nyiramanzi Igihozo?'), findsOneWidget);
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Member removed'), findsOneWidget);
+    expect(AppData.members.length, 3);
+    for (Task task in AppData.tasks) {
+      expect(task.assigneeId == 'm4', false);
+    }
+  });
 }
