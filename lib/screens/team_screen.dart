@@ -70,7 +70,7 @@ class _TeamScreenState extends State<TeamScreen> {
   int openTasks(Member member) {
     int count = 0;
     for (Task task in AppData.tasks) {
-      if (task.assigneeId == member.id && task.status != 'Done') {
+      if (task.assigneeId == member.id && task.status != statusDone) {
         count++;
       }
     }

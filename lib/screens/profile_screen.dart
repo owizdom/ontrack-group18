@@ -54,9 +54,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (task.assigneeId == me.id) {
         myTotal++;
         String sla = getSlaStatus(task, DateTime.now());
-        if (sla == 'At Risk') myAtRisk++;
-        if (sla == 'Overdue') myOverdue++;
-        if (sla == 'Completed') myDone++;
+        if (sla == slaAtRisk) myAtRisk++;
+        if (sla == slaOverdue) myOverdue++;
+        if (sla == slaCompleted) myDone++;
       }
     }
 
@@ -93,9 +93,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   numberColumn('My tasks', myTotal, mainColor),
-                  numberColumn('At Risk', myAtRisk, atRiskColor),
-                  numberColumn('Overdue', myOverdue, overdueColor),
-                  numberColumn('Done', myDone, completedColor),
+                  numberColumn(slaAtRisk, myAtRisk, atRiskColor),
+                  numberColumn(slaOverdue, myOverdue, overdueColor),
+                  numberColumn(statusDone, myDone, completedColor),
                 ],
               ),
             ),
@@ -113,14 +113,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  ruleRow('Completed', 'The task status is Done.'),
-                  ruleRow('Overdue', 'The due date has passed.'),
+                  ruleRow(slaCompleted, 'The task status is Done.'),
+                  ruleRow(slaOverdue, 'The due date has passed.'),
                   ruleRow(
-                    'At Risk',
+                    slaAtRisk,
                     'The due date is close. High priority = 3 days, '
-                        'Medium = 2 days, Low = 1 day.',
+                    'Medium = 2 days, Low = 1 day.',
                   ),
-                  ruleRow('On Track', 'Everything else.'),
+                  ruleRow(slaOnTrack, 'Everything else.'),
                 ],
               ),
             ),

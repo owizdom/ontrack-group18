@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
 import '../data/app_data.dart';
 import '../logic/sla.dart';
 import '../models/task.dart';
@@ -19,7 +20,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
   String searchText = '';
   String selectedFilter = 'All';
 
-  List<String> filters = ['All', 'On Track', 'At Risk', 'Overdue', 'Completed'];
+  List<String> filters = [
+    'All',
+    slaOnTrack,
+    slaAtRisk,
+    slaOverdue,
+    slaCompleted,
+  ];
 
   void openTask(Task task) async {
     await Navigator.push(
@@ -56,10 +63,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
     // Put the most urgent tasks at the top.
     shownTasks.sort((a, b) {
       // Finished tasks go to the bottom of the list.
-      if (a.status == 'Done' && b.status != 'Done') {
+      if (a.status == statusDone && b.status != statusDone) {
         return 1;
       }
-      if (b.status == 'Done' && a.status != 'Done') {
+      if (b.status == statusDone && a.status != statusDone) {
         return -1;
       }
       // Otherwise, the soonest due date comes first.

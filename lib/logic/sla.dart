@@ -26,9 +26,9 @@ int daysLeft(DateTime dueDate, DateTime today) {
 
 // How many days before the deadline a task becomes At Risk.
 int riskDays(String priority) {
-  if (priority == 'High') {
+  if (priority == priorityHigh) {
     return 3;
-  } else if (priority == 'Medium') {
+  } else if (priority == priorityMedium) {
     return 2;
   } else {
     return 1;
@@ -36,27 +36,27 @@ int riskDays(String priority) {
 }
 
 String getSlaStatus(Task task, DateTime today) {
-  if (task.status == 'Done') {
-    return 'Completed';
+  if (task.status == statusDone) {
+    return slaCompleted;
   }
 
   int left = daysLeft(task.dueDate, today);
 
   if (left < 0) {
-    return 'Overdue';
+    return slaOverdue;
   }
   if (left <= riskDays(task.priority)) {
-    return 'At Risk';
+    return slaAtRisk;
   }
-  return 'On Track';
+  return slaOnTrack;
 }
 
 Color getSlaColor(String slaStatus) {
-  if (slaStatus == 'Completed') {
+  if (slaStatus == slaCompleted) {
     return completedColor;
-  } else if (slaStatus == 'Overdue') {
+  } else if (slaStatus == slaOverdue) {
     return overdueColor;
-  } else if (slaStatus == 'At Risk') {
+  } else if (slaStatus == slaAtRisk) {
     return atRiskColor;
   } else {
     return onTrackColor;
@@ -68,11 +68,11 @@ String getSlaMessage(Task task, DateTime today) {
   String sla = getSlaStatus(task, today);
   int left = daysLeft(task.dueDate, today);
 
-  if (sla == 'Completed') {
+  if (sla == slaCompleted) {
     return 'This task is done.';
-  } else if (sla == 'Overdue') {
+  } else if (sla == slaOverdue) {
     return 'The due date passed ${-left} day(s) ago and the task is not done.';
-  } else if (sla == 'At Risk') {
+  } else if (sla == slaAtRisk) {
     return 'Only $left day(s) left. ${task.priority} priority tasks become '
         'At Risk ${riskDays(task.priority)} day(s) before the deadline.';
   } else {
