@@ -118,7 +118,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         status: selectedStatus,
         dueDate: selectedDate!,
       );
-      AppData.tasks.insert(0, newTask); // newest task first
+      AppData.tasks.insert(0, newTask); // at the start of the list
     } else {
       // Change the existing task.
       Task task = widget.task!;

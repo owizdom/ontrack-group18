@@ -45,20 +45,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     Member me = AppData.currentUser()!;
 
-    // Count my tasks by SLA status.
-    int myTotal = 0;
-    int myAtRisk = 0;
-    int myOverdue = 0;
-    int myDone = 0;
+    // My tasks, counted with the same function as the dashboard.
+    DateTime today = DateTime.now();
+    List<Task> myTasks = [];
     for (Task task in AppData.tasks) {
       if (task.assigneeId == me.id) {
-        myTotal++;
-        String sla = getSlaStatus(task, DateTime.now());
-        if (sla == slaAtRisk) myAtRisk++;
-        if (sla == slaOverdue) myOverdue++;
-        if (sla == slaCompleted) myDone++;
+        myTasks.add(task);
       }
     }
+    int myAtRisk = countSla(myTasks, slaAtRisk, today);
+    int myOverdue = countSla(myTasks, slaOverdue, today);
+    int myCompleted = countSla(myTasks, slaCompleted, today);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -92,10 +89,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  numberColumn('My tasks', myTotal, mainColor),
+                  numberColumn('My tasks', myTasks.length, mainColor),
                   numberColumn(slaAtRisk, myAtRisk, atRiskColor),
                   numberColumn(slaOverdue, myOverdue, overdueColor),
-                  numberColumn(statusDone, myDone, completedColor),
+                  numberColumn(slaCompleted, myCompleted, completedColor),
                 ],
               ),
             ),
@@ -117,8 +114,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ruleRow(slaOverdue, 'The due date has passed.'),
                   ruleRow(
                     slaAtRisk,
-                    'The due date is close. High priority = 3 days, '
-                    'Medium = 2 days, Low = 1 day.',
+                    // The numbers come from riskDays, so this text
+                    // always matches the rule.
+                    'The due date is close. High priority = '
+                    '${riskDays(priorityHigh)} days, Medium = '
+                    '${riskDays(priorityMedium)} days, Low = '
+                    '${riskDays(priorityLow)} day.',
                   ),
                   ruleRow(slaOnTrack, 'Everything else.'),
                 ],
