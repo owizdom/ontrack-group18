@@ -4,6 +4,7 @@ import '../constants.dart';
 import '../data/app_data.dart';
 import '../models/member.dart';
 import '../models/task.dart';
+import '../widgets/confirm_dialog.dart';
 import 'member_form_screen.dart';
 
 // The list of team members, with how many open tasks each one has.
@@ -32,25 +33,14 @@ class _TeamScreenState extends State<TeamScreen> {
       return;
     }
 
-    bool? confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Remove ${member.name}?'),
-        content: const Text('Their tasks will become unassigned.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove', style: TextStyle(color: overdueColor)),
-          ),
-        ],
-      ),
+    bool confirmed = await askToConfirm(
+      context,
+      'Remove ${member.name}?',
+      'Their tasks will become unassigned.',
+      'Remove',
     );
 
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     // Unassign their tasks, then remove the member.
     for (Task task in AppData.tasks) {

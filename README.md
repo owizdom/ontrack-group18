@@ -25,7 +25,8 @@ lib/
   models/member.dart           the Member class
   data/app_data.dart           all data, saved with SharedPreferences
   logic/sla.dart               the SLA rules
-  widgets/sla_badge.dart       coloured SLA label
+  widgets/confirm_dialog.dart  the "are you sure?" dialog
+  widgets/sla_badge.dart       coloured SLA label, its colour and icon
   widgets/task_card.dart       one task in a list
   screens/sign_in_screen.dart
   screens/home_screen.dart     bottom navigation bar
