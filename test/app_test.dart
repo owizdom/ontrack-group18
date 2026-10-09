@@ -23,6 +23,15 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // Opens the new member form from the sign in screen.
+  Future<void> openMemberForm(WidgetTester tester) async {
+    await tester.scrollUntilVisible(find.text('Add a new member'), 100);
+    await tester.ensureVisible(find.text('Add a new member'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add a new member'));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('sign in opens the dashboard', (tester) async {
     await startApp(tester);
     expect(find.text('Who is working today?'), findsOneWidget);
@@ -209,5 +218,20 @@ void main() {
 
     expect(find.text('Due ${formatDate(task.dueDate)}'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the member form rejects an email like "@."', (tester) async {
+    await startApp(tester);
+    await openMemberForm(tester);
+
+    await tester.enterText(find.byKey(const Key('nameField')), 'New Person');
+    await tester.enterText(find.byKey(const Key('emailField')), '@.');
+    await tester.enterText(find.byKey(const Key('roleField')), 'Tester');
+    await tester.ensureVisible(find.byKey(const Key('saveMemberButton')));
+    await tester.tap(find.byKey(const Key('saveMemberButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please enter a valid email'), findsOneWidget);
+    expect(AppData.members.length, 4);
   });
 }

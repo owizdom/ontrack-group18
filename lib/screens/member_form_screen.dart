@@ -50,7 +50,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       return 'Please enter an email';
     }
     String email = value.trim().toLowerCase();
-    if (!email.contains('@') || !email.contains('.')) {
+    // A valid email has text, one @, text, a dot, then text: name@site.com
+    int at = email.indexOf('@');
+    int lastDot = email.lastIndexOf('.');
+    bool oneAt = at > 0 && at == email.lastIndexOf('@');
+    bool dotAfterAt = lastDot > at + 1 && lastDot < email.length - 1;
+    if (!oneAt || !dotAfterAt || email.contains(' ')) {
       return 'Please enter a valid email';
     }
     // No two members can have the same email.
@@ -132,6 +137,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 key: const Key('emailField'),
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
+                maxLength: 50,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: validateEmail,
               ),
@@ -139,6 +145,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               TextFormField(
                 key: const Key('roleField'),
                 controller: roleController,
+                maxLength: 30,
                 decoration: const InputDecoration(labelText: 'Role'),
                 validator: validateRole,
               ),
