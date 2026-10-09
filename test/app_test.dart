@@ -252,4 +252,22 @@ void main() {
         .dy;
     expect(dueInOne < dueInTwo, true);
   });
+
+  testWidgets('adding a member shows a message', (tester) async {
+    await startApp(tester);
+    await openMemberForm(tester);
+
+    await tester.enterText(find.byKey(const Key('nameField')), 'New Person');
+    await tester.enterText(
+      find.byKey(const Key('emailField')),
+      'new.person@alustudent.com',
+    );
+    await tester.enterText(find.byKey(const Key('roleField')), 'Tester');
+    await tester.ensureVisible(find.byKey(const Key('saveMemberButton')));
+    await tester.tap(find.byKey(const Key('saveMemberButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Member added'), findsOneWidget);
+    expect(AppData.members.length, 5);
+  });
 }

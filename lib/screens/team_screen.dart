@@ -60,7 +60,10 @@ class _TeamScreenState extends State<TeamScreen> {
     }
     AppData.members.remove(member);
     await AppData.save();
+    if (!mounted) return;
     setState(() {});
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Member removed')));
   }
 
   // How many tasks of this member are not done yet.

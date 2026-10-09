@@ -104,6 +104,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
     await AppData.save();
     if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          widget.member == null ? 'Member added' : 'Member updated',
+        ),
+      ),
+    );
     Navigator.pop(context);
   }
 
