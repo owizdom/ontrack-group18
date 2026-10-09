@@ -84,6 +84,15 @@ class AppData {
     return null;
   }
 
+  // The name of a member, or 'Unassigned' if there is no such member.
+  static String memberName(String id) {
+    Member? member = findMember(id);
+    if (member == null) {
+      return 'Unassigned';
+    }
+    return member.name;
+  }
+
   static Member? currentUser() {
     return findMember(currentUserId);
   }

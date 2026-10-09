@@ -291,4 +291,10 @@ void main() {
       expect(task.assigneeId == 'm4', false);
     }
   });
+
+  test('memberName gives Unassigned when the member is gone', () async {
+    await AppData.load();
+    expect(AppData.memberName('m2'), 'Pacifique Kami');
+    expect(AppData.memberName(''), 'Unassigned');
+  });
 }

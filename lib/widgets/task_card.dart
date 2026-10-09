@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../data/app_data.dart';
 import '../logic/sla.dart';
-import '../models/member.dart';
 import '../models/task.dart';
 import 'sla_badge.dart';
 
@@ -18,11 +17,7 @@ class TaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String sla = getSlaStatus(task, DateTime.now());
 
-    Member? assignee = AppData.findMember(task.assigneeId);
-    String assigneeName = 'Unassigned';
-    if (assignee != null) {
-      assigneeName = assignee.name;
-    }
+    String assigneeName = AppData.memberName(task.assigneeId);
 
     return Card(
       child: ListTile(

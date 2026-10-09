@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../data/app_data.dart';
 import '../logic/sla.dart';
-import '../models/member.dart';
 import '../models/task.dart';
 import '../widgets/sla_badge.dart';
 import 'task_form_screen.dart';
@@ -74,11 +73,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     String sla = getSlaStatus(task, today);
     Color slaColor = getSlaColor(sla);
 
-    Member? assignee = AppData.findMember(task.assigneeId);
-    String assigneeName = 'Unassigned';
-    if (assignee != null) {
-      assigneeName = assignee.name;
-    }
+    String assigneeName = AppData.memberName(task.assigneeId);
 
     return Scaffold(
       appBar: AppBar(
