@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
-import '../logic/sla.dart';
+
+// The colour for each SLA status.
+Color getSlaColor(String slaStatus) {
+  if (slaStatus == slaCompleted) {
+    return completedColor;
+  } else if (slaStatus == slaOverdue) {
+    return overdueColor;
+  } else if (slaStatus == slaAtRisk) {
+    return atRiskColor;
+  } else {
+    return onTrackColor;
+  }
+}
 
 // The icon for each SLA status. With an icon, the badge is still clear for
 // someone who cannot tell the colours apart.

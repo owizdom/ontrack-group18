@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import '../constants.dart';
 import '../models/task.dart';
 
@@ -49,18 +47,6 @@ String getSlaStatus(Task task, DateTime today) {
     return slaAtRisk;
   }
   return slaOnTrack;
-}
-
-Color getSlaColor(String slaStatus) {
-  if (slaStatus == slaCompleted) {
-    return completedColor;
-  } else if (slaStatus == slaOverdue) {
-    return overdueColor;
-  } else if (slaStatus == slaAtRisk) {
-    return atRiskColor;
-  } else {
-    return onTrackColor;
-  }
 }
 
 // A sentence that explains the SLA status, shown on the task details screen.
