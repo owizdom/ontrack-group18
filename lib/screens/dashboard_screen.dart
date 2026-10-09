@@ -40,16 +40,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DateTime today = DateTime.now();
 
     // Count the tasks for each SLA status.
-    int onTrack = countSla(AppData.tasks, 'On Track', today);
-    int atRisk = countSla(AppData.tasks, 'At Risk', today);
-    int overdue = countSla(AppData.tasks, 'Overdue', today);
-    int completed = countSla(AppData.tasks, 'Completed', today);
+    int onTrack = countSla(AppData.tasks, slaOnTrack, today);
+    int atRisk = countSla(AppData.tasks, slaAtRisk, today);
+    int overdue = countSla(AppData.tasks, slaOverdue, today);
+    int completed = countSla(AppData.tasks, slaCompleted, today);
 
     // The tasks that need attention: Overdue or At Risk.
     List<Task> needsAttention = [];
     for (Task task in AppData.tasks) {
       String sla = getSlaStatus(task, today);
-      if (sla == 'Overdue' || sla == 'At Risk') {
+      if (sla == slaOverdue || sla == slaAtRisk) {
         needsAttention.add(task);
       }
     }
@@ -107,14 +107,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // share the width equally.
           Row(
             children: [
-              Expanded(child: countBox('On Track', onTrack, onTrackColor)),
-              Expanded(child: countBox('At Risk', atRisk, atRiskColor)),
+              Expanded(child: countBox(slaOnTrack, onTrack, onTrackColor)),
+              Expanded(child: countBox(slaAtRisk, atRisk, atRiskColor)),
             ],
           ),
           Row(
             children: [
-              Expanded(child: countBox('Overdue', overdue, overdueColor)),
-              Expanded(child: countBox('Completed', completed, completedColor)),
+              Expanded(child: countBox(slaOverdue, overdue, overdueColor)),
+              Expanded(
+                child: countBox(slaCompleted, completed, completedColor),
+              ),
             ],
           ),
           const SizedBox(height: 16),

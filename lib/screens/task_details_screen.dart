@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../data/app_data.dart';
 import '../logic/sla.dart';
-import '../models/member.dart';
 import '../models/task.dart';
+import '../widgets/confirm_dialog.dart';
 import '../widgets/sla_badge.dart';
 import 'task_form_screen.dart';
 
@@ -38,26 +38,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   }
 
   void deleteTask() async {
-    // Ask first. showDialog returns true only if "Delete" was pressed.
-    bool? confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete task?'),
-        content: Text('"${widget.task.title}" will be removed.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: overdueColor)),
-          ),
-        ],
-      ),
+    // Ask first. askToConfirm returns true only if "Delete" was pressed.
+    bool confirmed = await askToConfirm(
+      context,
+      'Delete task?',
+      '"${widget.task.title}" will be removed.',
+      'Delete',
     );
 
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     AppData.tasks.remove(widget.task);
     await AppData.save();
@@ -74,11 +63,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     String sla = getSlaStatus(task, today);
     Color slaColor = getSlaColor(sla);
 
-    Member? assignee = AppData.findMember(task.assigneeId);
-    String assigneeName = 'Unassigned';
-    if (assignee != null) {
-      assigneeName = assignee.name;
-    }
+    String assigneeName = AppData.memberName(task.assigneeId);
 
     return Scaffold(
       appBar: AppBar(

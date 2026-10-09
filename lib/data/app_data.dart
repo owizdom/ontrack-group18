@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants.dart';
 import '../models/member.dart';
 import '../models/task.dart';
 
@@ -83,6 +84,15 @@ class AppData {
     return null;
   }
 
+  // The name of a member, or 'Unassigned' if there is no such member.
+  static String memberName(String id) {
+    Member? member = findMember(id);
+    if (member == null) {
+      return 'Unassigned';
+    }
+    return member.name;
+  }
+
   static Member? currentUser() {
     return findMember(currentUserId);
   }
@@ -129,8 +139,8 @@ class AppData {
         title: 'Fix login screen layout',
         description: 'The sign in screen overflows on small phones.',
         assigneeId: 'm2',
-        priority: 'High',
-        status: 'In Progress',
+        priority: priorityHigh,
+        status: statusInProgress,
         dueDate: today.subtract(const Duration(days: 2)),
       ),
       Task(
@@ -139,8 +149,8 @@ class AppData {
         description:
             'Use SharedPreferences so tasks stay after closing the app.',
         assigneeId: 'm4',
-        priority: 'High',
-        status: 'In Progress',
+        priority: priorityHigh,
+        status: statusInProgress,
         dueDate: today.add(const Duration(days: 2)),
       ),
       Task(
@@ -148,8 +158,8 @@ class AppData {
         title: 'Test the task form',
         description: 'Try empty fields and very short titles.',
         assigneeId: 'm4',
-        priority: 'Medium',
-        status: 'To Do',
+        priority: priorityMedium,
+        status: statusToDo,
         dueDate: today.add(const Duration(days: 1)),
       ),
       Task(
@@ -157,8 +167,8 @@ class AppData {
         title: 'Design the dashboard',
         description: 'Cards for each SLA status.',
         assigneeId: 'm3',
-        priority: 'Medium',
-        status: 'In Progress',
+        priority: priorityMedium,
+        status: statusInProgress,
         dueDate: today.add(const Duration(days: 7)),
       ),
       Task(
@@ -166,8 +176,8 @@ class AppData {
         title: 'Plan the demo video',
         description: 'Decide who explains which part.',
         assigneeId: 'm1',
-        priority: 'Low',
-        status: 'To Do',
+        priority: priorityLow,
+        status: statusToDo,
         dueDate: today.add(const Duration(days: 10)),
       ),
       Task(
@@ -175,8 +185,8 @@ class AppData {
         title: 'Set up the GitHub repo',
         description: 'Create the repo and one branch per member.',
         assigneeId: 'm1',
-        priority: 'High',
-        status: 'Done',
+        priority: priorityHigh,
+        status: statusDone,
         dueDate: today.subtract(const Duration(days: 5)),
       ),
     ];

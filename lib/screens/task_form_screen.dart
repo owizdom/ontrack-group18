@@ -25,8 +25,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   final dateController = TextEditingController();
 
   String? selectedAssigneeId;
-  String selectedPriority = 'Medium';
-  String selectedStatus = 'To Do';
+  String selectedPriority = priorityMedium;
+  String selectedStatus = statusToDo;
   DateTime? selectedDate;
   bool triedToSave = false; // becomes true after the first press on Save
 
@@ -118,7 +118,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         status: selectedStatus,
         dueDate: selectedDate!,
       );
-      AppData.tasks.insert(0, newTask); // newest task first
+      AppData.tasks.insert(0, newTask); // at the start of the list
     } else {
       // Change the existing task.
       Task task = widget.task!;
