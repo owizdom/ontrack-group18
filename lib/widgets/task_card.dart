@@ -33,10 +33,18 @@ class TaskCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(
-          '$assigneeName • ${task.priority}\nDue ${formatDate(task.dueDate)}',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        // Two separate lines, so a long name is cut with "..." and the
+        // due date always stays visible.
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$assigneeName • ${task.priority}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text('Due ${formatDate(task.dueDate)}'),
+          ],
         ),
         trailing: SlaBadge(slaStatus: sla),
       ),

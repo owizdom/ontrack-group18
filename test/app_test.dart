@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sla_tracker/constants.dart';
 import 'package:sla_tracker/data/app_data.dart';
 import 'package:sla_tracker/main.dart';
 import 'package:sla_tracker/models/task.dart';
 import 'package:sla_tracker/screens/task_details_screen.dart';
 import 'package:sla_tracker/screens/task_form_screen.dart';
+import 'package:sla_tracker/widgets/task_card.dart';
 
 void main() {
   setUp(() {
@@ -18,6 +20,15 @@ void main() {
     // Remove any app from an earlier start, like closing it.
     await tester.pumpWidget(const SizedBox());
     await tester.pumpWidget(MyApp(loadedOk: ok));
+    await tester.pumpAndSettle();
+  }
+
+  // Opens the new member form from the sign in screen.
+  Future<void> openMemberForm(WidgetTester tester) async {
+    await tester.scrollUntilVisible(find.text('Add a new member'), 100);
+    await tester.ensureVisible(find.text('Add a new member'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add a new member'));
     await tester.pumpAndSettle();
   }
 
@@ -183,5 +194,80 @@ void main() {
     expect(find.text('Please choose a team member'), findsNothing);
     expect(find.text('Please pick a due date'), findsNothing);
     expect(find.text('Title must be at least 3 characters'), findsNothing);
+  });
+
+  testWidgets('a task card with a long name still shows the due date', (
+    tester,
+  ) async {
+    // A small phone, 320 pixels wide.
+    tester.view.physicalSize = const Size(960, 1700);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await AppData.load();
+    AppData.members[1].name = 'Pacifique Kamikazi Uwimana Nta';
+    Task task = AppData.tasks[0]; // assigned to that member
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TaskCard(task: task, onTap: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('Due ${formatDate(task.dueDate)}'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the member form rejects an email like "@."', (tester) async {
+    await startApp(tester);
+    await openMemberForm(tester);
+
+    await tester.enterText(find.byKey(const Key('nameField')), 'New Person');
+    await tester.enterText(find.byKey(const Key('emailField')), '@.');
+    await tester.enterText(find.byKey(const Key('roleField')), 'Tester');
+    await tester.ensureVisible(find.byKey(const Key('saveMemberButton')));
+    await tester.tap(find.byKey(const Key('saveMemberButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please enter a valid email'), findsOneWidget);
+    expect(AppData.members.length, 4);
+  });
+
+  testWidgets('the dashboard lists the most urgent task first', (tester) async {
+    // A tall screen, so every card is built.
+    tester.view.physicalSize = const Size(1200, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    // "Test the task form" is due in 1 day, "Save tasks on the phone" in 2.
+    double dueInOne = tester.getTopLeft(find.text('Test the task form')).dy;
+    double dueInTwo = tester
+        .getTopLeft(find.text('Save tasks on the phone'))
+        .dy;
+    expect(dueInOne < dueInTwo, true);
+  });
+
+  testWidgets('adding a member shows a message', (tester) async {
+    await startApp(tester);
+    await openMemberForm(tester);
+
+    await tester.enterText(find.byKey(const Key('nameField')), 'New Person');
+    await tester.enterText(
+      find.byKey(const Key('emailField')),
+      'new.person@alustudent.com',
+    );
+    await tester.enterText(find.byKey(const Key('roleField')), 'Tester');
+    await tester.ensureVisible(find.byKey(const Key('saveMemberButton')));
+    await tester.tap(find.byKey(const Key('saveMemberButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Member added'), findsOneWidget);
+    expect(AppData.members.length, 5);
   });
 }
