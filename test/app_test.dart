@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sla_tracker/constants.dart';
 import 'package:sla_tracker/data/app_data.dart';
 import 'package:sla_tracker/main.dart';
 import 'package:sla_tracker/models/task.dart';
 import 'package:sla_tracker/screens/task_details_screen.dart';
 import 'package:sla_tracker/screens/task_form_screen.dart';
+import 'package:sla_tracker/widgets/task_card.dart';
 
 void main() {
   setUp(() {
@@ -183,5 +185,29 @@ void main() {
     expect(find.text('Please choose a team member'), findsNothing);
     expect(find.text('Please pick a due date'), findsNothing);
     expect(find.text('Title must be at least 3 characters'), findsNothing);
+  });
+
+  testWidgets('a task card with a long name still shows the due date', (
+    tester,
+  ) async {
+    // A small phone, 320 pixels wide.
+    tester.view.physicalSize = const Size(960, 1700);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await AppData.load();
+    AppData.members[1].name = 'Pacifique Kamikazi Uwimana Nta';
+    Task task = AppData.tasks[0]; // assigned to that member
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TaskCard(task: task, onTap: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('Due ${formatDate(task.dueDate)}'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
