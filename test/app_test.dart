@@ -234,4 +234,22 @@ void main() {
     expect(find.text('Please enter a valid email'), findsOneWidget);
     expect(AppData.members.length, 4);
   });
+
+  testWidgets('the dashboard lists the most urgent task first', (tester) async {
+    // A tall screen, so every card is built.
+    tester.view.physicalSize = const Size(1200, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await startApp(tester);
+    await tester.tap(find.text('Pacifique Kami'));
+    await tester.pumpAndSettle();
+
+    // "Test the task form" is due in 1 day, "Save tasks on the phone" in 2.
+    double dueInOne = tester.getTopLeft(find.text('Test the task form')).dy;
+    double dueInTwo = tester
+        .getTopLeft(find.text('Save tasks on the phone'))
+        .dy;
+    expect(dueInOne < dueInTwo, true);
+  });
 }

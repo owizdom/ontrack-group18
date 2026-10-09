@@ -53,6 +53,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         needsAttention.add(task);
       }
     }
+    // Soonest due date first, the same order as the task list.
+    needsAttention.sort((a, b) {
+      return a.dueDate.compareTo(b.dueDate);
+    });
 
     // Progress = completed tasks / all tasks. Check for 0 first so we never
     // divide by zero.
