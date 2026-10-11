@@ -4,6 +4,21 @@ A Flutter mobile app for a small software team to manage project tasks and see w
 
 Each task has an assignee, a priority, a due date and a status. From those, the app shows an SLA status: On Track, At Risk, Overdue or Completed.
 
+![Sign in, dashboard, task list and task details](docs/screenshots/app_screens.png)
+
+Group 18, Formative 1 group project.
+
+## What you can do
+
+- Sign in by tapping your name. There is no password.
+- See the project progress, the count of tasks in each SLA status, and the tasks that need attention.
+- Create, edit and delete tasks, and move a task from To Do to In Progress to Done.
+- Search tasks by title and filter them by SLA status.
+- Add, edit and remove team members. Removing a member unassigns their tasks.
+- Close the app and open it again. The tasks, the members and the signed-in member are still there.
+
+The app has eight screens: Sign in, Dashboard, Task list, Task details, Create/Edit task, Team, Member form and Profile.
+
 ## SLA rules
 
 Checked in order, the first match wins:
@@ -14,6 +29,17 @@ Checked in order, the first match wins:
 4. On Track: everything else.
 
 The code is in `lib/logic/sla.dart`.
+
+## Team
+
+| Member | Branches | Part of the app |
+|--------|----------|-----------------|
+| Wisdom Ikechukwu Okechukwu | `wisdom`, `wisdom-count-sla`, `wisdom-review-fixes`, `wisdom-code-quality`, `wisdom-readme-filter-test` | SLA rules, app start, bottom navigation, dashboard, app tests, review fixes |
+| Pacifique Kami | `pacifique`, `pacifique-sort-tasks` | Task list, task details, task form, task card |
+| Nyiramanzi Igihozo | `nyiramanzi`, `nyiramanzi-more-tests` | Task and Member models, saving and loading, storage tests |
+| Abigail Salem Tendo | `abigail`, `abigail-sla-icons` | Colours, SLA badge, sign in, member form, team, profile |
+
+The file each member owns is listed in `docs/TASKS.md`. Every branch reached `main` through a pull request.
 
 ## Project structure
 
@@ -55,7 +81,7 @@ flutter pub get
 flutter run
 ```
 
-Run it on an emulator or a phone, not in a browser.
+Run it on an emulator or a phone, not in a browser. We ran it on an iPhone simulator and on an Android 16 emulator.
 
 ## Test
 
@@ -63,3 +89,9 @@ Run it on an emulator or a phone, not in a browser.
 flutter analyze
 flutter test
 ```
+
+`flutter test` runs 33 tests. They cover the SLA rules, saving and loading, the forms, the task list filters and the main flows.
+
+## AI assistance
+
+This project was built with AI assistance. We used Claude by Anthropic to help write the code and the tests and to review them. The spec in `docs/specs/sla-task-tracker.md` and its acceptance tests came first. The group report has the full AI usage declaration.
