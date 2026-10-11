@@ -8,6 +8,8 @@ Each task has an assignee, a priority, a due date and a status. From those, the 
 
 Group 18, Formative 1 group project.
 
+Demo video: <https://youtu.be/Jwwh9JgaOJY>
+
 ## What you can do
 
 - Sign in by tapping your name. There is no password.
