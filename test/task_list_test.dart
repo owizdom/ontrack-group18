@@ -46,4 +46,60 @@ void main() {
     await tester.pump();
     expect(find.text('No tasks match your search or filter.'), findsOneWidget);
   });
+
+  testWidgets('a filter chip shows only the tasks with that SLA status', (
+    tester,
+  ) async {
+    AppData.members = [];
+    AppData.tasks = [
+      makeTask('Late task', -3, 'To Do'),
+      makeTask('Far task', 9, 'To Do'),
+      makeTask('Finished task', -3, 'Done'),
+    ];
+    await tester.pumpWidget(const MaterialApp(home: TaskListScreen()));
+
+    // With "All" selected, every task shows.
+    expect(find.text('Late task'), findsOneWidget);
+    expect(find.text('Far task'), findsOneWidget);
+    expect(find.text('Finished task'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Overdue'));
+    await tester.pump();
+    expect(find.text('Late task'), findsOneWidget);
+    expect(find.text('Far task'), findsNothing);
+    expect(find.text('Finished task'), findsNothing);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Completed'));
+    await tester.pump();
+    expect(find.text('Finished task'), findsOneWidget);
+    expect(find.text('Late task'), findsNothing);
+
+    // A filter with no matching task shows the empty message.
+    await tester.tap(find.widgetWithText(ChoiceChip, 'At Risk'));
+    await tester.pump();
+    expect(find.text('No tasks match your search or filter.'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'All'));
+    await tester.pump();
+    expect(find.text('Far task'), findsOneWidget);
+    expect(find.text('Late task'), findsOneWidget);
+  });
+
+  testWidgets('search and a filter work together', (tester) async {
+    AppData.members = [];
+    AppData.tasks = [
+      makeTask('Late report', -3, 'To Do'),
+      makeTask('Late design', -2, 'To Do'),
+      makeTask('Far report', 9, 'To Do'),
+    ];
+    await tester.pumpWidget(const MaterialApp(home: TaskListScreen()));
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Overdue'));
+    await tester.enterText(find.byKey(const Key('searchField')), 'REPORT');
+    await tester.pump();
+
+    expect(find.text('Late report'), findsOneWidget);
+    expect(find.text('Late design'), findsNothing);
+    expect(find.text('Far report'), findsNothing);
+  });
 }

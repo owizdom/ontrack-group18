@@ -63,8 +63,8 @@ Task form:
 
 Member form:
 - Name: 2 to 30 characters.
-- Email: required, must contain "@" and ".", must not belong to another member.
-- Role: required.
+- Email: required, at most 50 characters. It needs text, one "@", text, a dot and text after the dot, like `name@site.com`, with no spaces. It must not belong to another member.
+- Role: required, at most 30 characters.
 
 Errors show after the first press on Save, then update as the user types.
 
@@ -89,6 +89,9 @@ Other:
 | A fixed field loses its error while typing | `test/app_test.dart` |
 | A 30-character name does not overflow on a 320 px screen | `test/app_test.dart` |
 | No error shows before the first press on Save | `test/app_test.dart` |
+| An email like "@." is rejected | `test/app_test.dart` |
+| A filter chip shows only the tasks with that SLA status | `test/task_list_test.dart` |
+| Search and a filter work together | `test/task_list_test.dart` |
 
 ## Pre-mortem
 
